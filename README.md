@@ -138,17 +138,19 @@ The agent uses the current conversational state to choose a retrieval strategy.
 
 When hard constraints are available, the session is treated as
 precision-oriented.
-The system protects more of the strongest lexical candidates and prioritizes
-products satisfying accumulated constraints.
+
+The system relies more strongly on accumulated hard and soft constraints during
+reranking, while allowing hybrid lexical-semantic candidates to participate in
+the candidate pool.
 
 ### Browsing mode
 
 When no hard constraint has yet been established, the system treats the session
 as exploratory.
-Browsing allows more semantic exploration and can activate diversity-aware
-recovery during difficult late-turn sessions.
-This routing is based on runtime state rather than on access to the evaluator's
-hidden scenario label.
+
+Browsing retains a stronger lexical anchor during initial hybrid retrieval and
+can activate semantic diversity-aware recovery during difficult late-turn
+sessions.
 
 ---
 
@@ -291,7 +293,7 @@ No external API calls are required during evaluation.
 
 ---
 
-## 11.Latency and Cost
+## 11. Latency and Cost
 
 The final offline configuration was benchmarked by running the complete
 official 200-session public evaluator.
@@ -392,10 +394,6 @@ models/
     all-MiniLM-L6-v2/
         Local SentenceTransformer model used by the full offline submission.
         Large model files may be omitted from the public Git repository.
-
-experiments/
-    ...
-        Saved experiment metrics and selected code snapshots.
 
 build_clusters.py
     Offline MiniBatchKMeans cluster-generation script.

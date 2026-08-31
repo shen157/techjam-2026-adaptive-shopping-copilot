@@ -388,7 +388,7 @@ def _classify_value(value: str) -> str:
     return "feature"
 
 class Agent:
-    """Editable weak baseline: stateless BM25 retrieval with no LLM dependency."""
+    """Stateful hybrid conversational retrieval agent for TechJam Track 4."""
 
     def __init__(self, catalog_path: str | Path = "data/catalog.jsonl") -> None:
         self.catalog_path = Path(catalog_path)
