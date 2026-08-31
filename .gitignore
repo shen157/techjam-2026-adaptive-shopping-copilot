@@ -1,0 +1,55 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Secrets / local environments
+.env
+.venv/
+venv/
+
+# Evaluator-generated output
+results.json
+*.log
+
+# Organizer-provided frozen catalog
+data/catalog.jsonl
+data/releases/
+
+# Large generated runtime assets
+# Distributed separately through GitHub Releases.
+data/dense_embeddings.npy
+models/all-MiniLM-L6-v2/
+
+# Local development / archive files
+README_kit.md
+README_original_participant_kit.md
+DATA_ATTRIBUTION_original.md
+
+# Full internal experiment archive.
+# Major ablation results are already summarized in README.md.
+experiments/
+
+# Organizer-only code and private assets
+organizer/
+secure/
+
+# Internal organizer/provenance documents
+docs/audits/
+docs/data_selection_audit.md
+docs/participant_release_checklist.md
+
+# Organizer-only pipeline tests
+tests/test_5core_builder.py
+tests/test_organizer_pipeline.py
+
+# Local tuning outputs
+dense_weight_search.json
+protected_topk_search.json
+
+scripts/tune_dense_weight.py
+scripts/tune_protected_topk.py
