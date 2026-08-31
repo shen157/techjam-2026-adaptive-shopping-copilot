@@ -53,3 +53,8 @@ protected_topk_search.json
 
 scripts/tune_dense_weight.py
 scripts/tune_protected_topk.py
+
+# Local release packaging
+runtime_assets.zip
+runtime_assets.sha256.txt
+runtime_assets_staging/

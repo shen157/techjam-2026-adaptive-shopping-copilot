@@ -1,1 +1,1 @@
-"""Participant starter package."""
+"""Adaptive Shopping Copilot agent package."""

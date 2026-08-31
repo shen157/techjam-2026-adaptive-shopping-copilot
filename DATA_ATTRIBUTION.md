@@ -1,7 +1,7 @@
 # Data and Model Attribution
 
 This project was developed for TikTok TechJam 2026 Track 4:
-**Shopping Copilot — AI Conversational Search and Recommendations**.
+**Shopping Copilot - AI Conversational Search and Recommendations**.
 
 The project uses the organizer-provided frozen competition catalog and public
 evaluation sessions together with locally generated semantic retrieval assets.
@@ -42,6 +42,8 @@ docs/competition_specification.md
 docs/agent_api_contract.json
 docs/evaluation_config.json
 docs/baseline_results.json
+docs/submission_rules.md
+tests/
 evaluator/
 ```
 
@@ -75,8 +77,13 @@ Original model source:
 
 https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 
-Users redistributing the model should review and follow the licensing and usage
-terms published with the original model.
+The `sentence-transformers/all-MiniLM-L6-v2` model is distributed under the
+Apache License 2.0 according to its upstream Hugging Face model card.
+
+The local model files used by this project are distributed separately through
+the project's GitHub Release `v1`:
+
+https://github.com/shen157/techjam-2026-adaptive-shopping-copilot/releases/tag/v1
 
 ---
 

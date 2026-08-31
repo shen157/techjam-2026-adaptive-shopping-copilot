@@ -3,7 +3,7 @@
 ### Failure-Aware Hybrid Conversational Retrieval for E-Commerce
 
 Adaptive Shopping Copilot is a conversational product-search agent developed for
-TikTok TechJam 2026 Track 4: Shopping Copilot — AI Conversational Search and
+TikTok TechJam 2026 Track 4: Shopping Copilot - AI Conversational Search and
 Recommendations.
 
 The system is designed to distinguish high-intent buying from exploratory
@@ -175,8 +175,10 @@ Catalog embeddings are precomputed once and stored locally, allowing runtime
 retrieval to use efficient NumPy similarity computation rather than repeatedly
 encoding all 50,000 products.
 ### Rank fusion
-BM25 and dense results are combined using weighted Reciprocal Rank Fusion
-(RRF).
+A route-dependent lexical prefix is preserved as a precision anchor, while the
+remaining BM25 and dense candidates are combined using weighted Reciprocal Rank
+Fusion (RRF).
+
 The lexical signal remains dominant while the dense signal provides semantic
 recall for less exact wording.
 
@@ -198,8 +200,12 @@ Original hybrid retrieval rank
 This design keeps explicit current-session requirements stronger than weaker
 historical preferences.
 Several alternative ranking strategies were tested during development,
-including direct price-aware and profile-aware product reranking. They were not
-retained because they reduced public-set ranking quality.
+including explicit product-price filtering/reranking and direct profile-aware
+product reranking. Both were removed from the final system because they reduced
+public-development ranking quality.
+
+Budget can still be represented as a conversational preference, but the final
+V15 does not use product price as an explicit ranking signal.
 
 ---
 
@@ -273,9 +279,9 @@ observed TechnicalScore while preserving Hit Rate@10.
 The final system does not require a paid LLM API.
 For the official offline configuration, the MiniLM encoder is loaded from a
 local model directory and requires no network access.
-The public repository may omit large binary runtime assets depending on
-distribution constraints. See the setup instructions for the required asset
-layout.
+The public Git repository intentionally excludes the large binary runtime
+assets. The local MiniLM model and precomputed dense embeddings are distributed
+through GitHub Release `v1`. See the setup instructions below.
 Runtime behavior follows:
 
 ```text
@@ -361,8 +367,8 @@ every attempted feature.
 | **Final semantic diversity + profile tie-break** | **0.925** | **0.606480** | **3.435** | **0.795744** | **Final** |
 
 
-Rejected experiments were retained as design evidence rather than being hidden
-from the development history.
+Rejected experiments are summarized here to document the main design decisions
+that shaped the final system.
 
 ---
 
@@ -382,7 +388,7 @@ data/
         Official 200-session development set.
 
     dense_embeddings.npy
-        Precomputed MiniLM embeddings for the frozen catalog.
+        Precomputed MiniLM embeddings distributed through GitHub Release v1.
 
     dense_asins.json
         ASIN ordering corresponding to dense embeddings.
@@ -392,8 +398,8 @@ data/
 
 models/
     all-MiniLM-L6-v2/
-        Local SentenceTransformer model used by the full offline submission.
-        Large model files may be omitted from the public Git repository.
+        Local SentenceTransformer model used by the full offline configuration.
+        Distributed separately through GitHub Release v1.
 
 build_clusters.py
     Offline MiniBatchKMeans cluster-generation script.
@@ -408,28 +414,38 @@ The organizer-provided frozen catalog is kept read-only.
 
 ## 15. Setup
 
-Python 3.10 or later is recommended.
+The final system was developed and tested with Python 3.12.3.
 
-The final submission was developed and tested with Python 3.12.3.
-
-Install project dependencies:
+### 1. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Download the official frozen competition catalog using the participant-kit
-release instructions and place it at:
+### 2. Obtain the official catalog
+
+The frozen 50,000-product competition catalog is not redistributed in this
+repository.
+Obtain it through the official TechJam participant-kit distribution
+instructions and place it at:
 
 ```text
 data/catalog.jsonl
 ```
 
-The product catalog is intentionally not modified by this project.
+### 3. Download the offline runtime assets
+Download runtime_assets.zip from the project's GitHub Release:
+https://github.com/shen157/techjam-2026-adaptive-shopping-copilot/releases/tag/v1
+Extract the archive directly into the repository root.
+After extraction, the following paths should exist:
 
-The fully offline competition submission includes the local MiniLM model and
-precomputed dense embeddings. These large binary assets may be omitted from the
-public Git repository to keep the repository lightweight.
+```text
+data/dense_embeddings.npy
+models/all-MiniLM-L6-v2/
+```
+
+The runtime assets contain the precomputed catalog embeddings and local MiniLM
+encoder required by the full V15 hybrid configuration.
 
 ---
 
@@ -464,16 +480,31 @@ same environment and assets should reproduce the reported result.
 
 ## 17. Optional Runtime Controls
 
-Dense retrieval can be disabled for fallback testing:
+The final V15 configuration uses the default values below and requires no
+environment variables for normal offline execution.
+
+Disable dense retrieval for fallback testing:
 
 ```bash
 DISABLE_DENSE=1
 ```
-If the bundled local model is unavailable, Hugging Face Hub access is disabled
-by default. Development environments may explicitly permit Hub loading through
-the project's optional runtime flag.
-The official final configuration uses the bundled local model and requires no
-network access.
+
+Explicitly allow Hugging Face Hub loading when the bundled local model is
+unavailable:
+
+```bash
+ALLOW_HF_HUB=1
+```
+
+This option is intended only for development environments with network access.
+Hub access is disabled by default.
+The semantic-diversity protected prefix can be overridden for sensitivity
+testing:
+
+```bash
+DIVERSITY_PROTECTED_TOP_K=1
+```
+The final V15 configuration uses the default value 1
 
 ---
 

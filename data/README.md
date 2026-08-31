@@ -8,6 +8,12 @@ Each session contains a safe aggregate `user_profile` and public labels for loca
 
 ## `catalog.jsonl`
 
-Download `catalog.jsonl.gz` from the GitHub Release and decompress it as `catalog.jsonl` in this directory. Expected row count: 50,000.
+The frozen 50,000-product competition catalog is not included in this public
+repository or in the runtime-assets release.
 
-Never place API keys, private evaluation data, or participant outputs in this directory.
+Obtain the catalog through the official TechJam participant-kit distribution
+instructions and place the decompressed file at:
+
+`data/catalog.jsonl`
+
+Expected row count: 50,000.

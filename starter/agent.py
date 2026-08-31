@@ -165,29 +165,21 @@ def _extract_no_preference_attribute(
         r"feature|use[_ -]?case|other)"
     )
     patterns = (
-        # I don't have a preference for material.
         rf"(?:i\s+)?(?:don't|do not)\s+have\s+"
         rf"(?:an?\s+)?(?:additional\s+)?preference\s+"
         rf"(?:for|on|about)\s+{attribute_pattern}",
-        # I have no preference for color.
         rf"(?:i\s+)?have\s+no\s+(?:additional\s+)?"
         rf"preference\s+(?:for|on|about)\s+"
         rf"{attribute_pattern}",
-        # No preference on size.
         rf"no\s+(?:additional\s+)?preference\s+"
         rf"(?:for|on|about)\s+{attribute_pattern}",
-        # I'm flexible on style.
         rf"(?:i(?:'m| am)\s+)?flexible\s+"
         rf"(?:on|about|with)\s+{attribute_pattern}",
-        # Style doesn't matter to me.
         rf"{attribute_pattern}\s+"
         rf"(?:doesn't|does not)\s+matter"
         rf"(?:\s+to\s+me)?",
-        # Anything is fine for brand.
         rf"anything\s+is\s+fine\s+"
         rf"(?:for|on|with)\s+{attribute_pattern}",
-        # Use your judgment for material.
-        # Also accepts British spelling: judgement.
         rf"use\s+your\s+judg(?:e)?ment\s+"
         rf"(?:for|on|with)\s+{attribute_pattern}",
     )
@@ -212,31 +204,19 @@ def _extract_override_value(
 ) -> str | None:
     message = text.strip()
     patterns = (
-        # Official evaluator:
-        # Actually, ignore my earlier preference.
-        # What I need is: cotton.
         r"what\s+i\s+need\s+is\s*:\s*(.+)$",
-        # Instead, I need cotton.
-        # Instead, I want cotton.
         r"\binstead\b\s*[,;:.]?\s*"
         r"(?:i\s+(?:need|want|would\s+like)\s+)"
         r"(.+)$",
-        # Scratch that, I need cotton.
-        # Scratch that, cotton.
         r"\bscratch\s+that\b\s*[,;:.]?\s*"
         r"(?:i\s+(?:need|want|would\s+like)\s+)?"
         r"(.+)$",
-        # Forget that, I want cotton.
         r"\bforget\s+that\b\s*[,;:.]?\s*"
         r"(?:i\s+(?:need|want|would\s+like)\s+)?"
         r"(.+)$",
-        # I'd rather have cotton.
-        # I would rather have cotton.
         r"\bi(?:'d|\s+would)\s+rather\s+"
         r"(?:have|get|want)\s+(.+)$",
-        # Change it to cotton.
         r"\bchange\s+it\s+to\s+(.+)$",
-        # Actually, make it cotton.
         r"\bactually\b\s*[,;:.]?\s*"
         r"make\s+it\s+(.+)$",
     )
@@ -248,7 +228,8 @@ def _extract_override_value(
         )
         if match:
             value = match.group(1).strip(
-                " .,!?:;" )
+                " .,!?:;"
+                )
             if value:
                 return value
     return None
@@ -781,49 +762,49 @@ class Agent:
         return "browsing"
 
     def _dense_search(
-            self,
-            query: str,
-            limit: int,
-        ) -> list[str]:
-            if (
-                not query
-                or not self.dense_enabled
-                or self.dense_model is None
-                or self.dense_embeddings is None
-            ):
-                return []
-            try:
-                query_embedding = self.dense_model.encode(
-                    [query],
-                    normalize_embeddings=True,
-                    convert_to_numpy=True,
-                )[0].astype(np.float32)
-            except Exception:
-                self.dense_enabled = False
-                return []
-            scores = (
-                self.dense_embeddings
-                @ query_embedding
-            )
-            limit = min(
-                limit,
-                len(scores),
-            )
-            candidate_indices = np.argpartition(
-                -scores,
-                limit - 1,
-            )[:limit]
-            candidate_indices = (
-                candidate_indices[
-                    np.argsort(
-                        -scores[candidate_indices]
-                    )
-                ]
-            )
-            return [
-                self.dense_asins[index]
-                for index in candidate_indices
+        self,
+        query: str,
+        limit: int,
+    ) -> list[str]:
+        if (
+            not query
+            or not self.dense_enabled
+            or self.dense_model is None
+            or self.dense_embeddings is None
+        ):
+            return []
+        try:
+            query_embedding = self.dense_model.encode(
+                [query],
+                normalize_embeddings=True,
+                convert_to_numpy=True,
+            )[0].astype(np.float32)
+        except Exception:
+            self.dense_enabled = False
+            return []
+        scores = (
+            self.dense_embeddings
+            @ query_embedding
+        )
+        limit = min(
+            limit,
+            len(scores),
+        )
+        candidate_indices = np.argpartition(
+            -scores,
+            limit - 1,
+        )[:limit]
+        candidate_indices = (
+            candidate_indices[
+                np.argsort(
+                    -scores[candidate_indices]
+                )
             ]
+        )
+        return [
+            self.dense_asins[index]
+            for index in candidate_indices
+        ]
 
     def _candidate_attribute_values(
         self,
